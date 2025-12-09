@@ -1,0 +1,2 @@
+patients_with_events,mean_events_per_patient,median_events_per_patient,min_events,max_events,stddev_events
+197601,1009.7,666.0,1,31438,1125.5

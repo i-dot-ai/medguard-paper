@@ -1,0 +1,23 @@
+metric,value,description
+Sample Size (after cleaning),95.0,Total patients in cleaned evaluation
+Sample: System Flagged,51.0,Patients System flagged in sample
+Sample: System Not Flagged,44.0,Patients System did not flag in sample
+Sample: TP,46.0,True Positives in sample
+Sample: FP,5.0,False Positives in sample
+Sample: TN,44.0,True Negatives in sample
+Sample: FN,0.0,False Negatives in sample
+Population: System Flagging Rate,0.46,Fraction of population System flags
+Population: Prevalence (expert),0.41490196078431374,Fraction of population with issues
+Population: TP (proportion),0.41490196078431374,Fraction of population that are TP
+Population: FP (proportion),0.045098039215686274,Fraction of population that are FP
+Population: TN (proportion),0.54,Fraction of population that are TN
+Population: FN (proportion),0.0,Fraction of population that are FN
+Accuracy,0.9549019607843138,Overall accuracy (TP+TN)/(TP+FP+TN+FN)
+Sensitivity (Recall),1.0,TP / (TP+FN) - catches X% of all issues
+Specificity,0.922922252010724,TN / (TN+FP) - correctly ignores X% of non-issues
+PPV (Precision),0.9019607843137255,TP / (TP+FP) - X% of flags are correct
+NPV,1.0,TN / (TN+FN) - X% of non-flags are correct
+F1 Score,0.9484536082474228,Harmonic mean of precision and recall
+False Positive Rate,0.07707774798927614,FP / (FP+TN) - incorrectly flags X% of non-issues
+False Negative Rate,0.0,FN / (FN+TP) - misses X% of issues
+Cohen's Kappa,0.9085588880760791,Agreement beyond chance

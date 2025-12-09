@@ -1,0 +1,12 @@
+metric,value,description
+TP,206.0,"True Positives (System flagged, clinician found issues)"
+FN,0.0,"False Negatives (System didn't flag, clinician found issues)"
+FP,12.0,"False Positives (System flagged, clinician found no issues)"
+TN,59.0,"True Negatives (System didn't flag, clinician found no issues)"
+Precision,0.944954128440367,TP / (TP + FP)
+Recall,1.0,TP / (TP + FN) - Sensitivity
+F1,0.9716981132075472,Harmonic mean of Precision and Recall
+Accuracy,0.9566787003610109,(TP + TN) / Total
+Specificity,0.8309859154929577,TN / (TN + FP)
+PPV,0.944954128440367,Positive Predictive Value (same as Precision)
+NPV,1.0,Negative Predictive Value: TN / (TN + FN)

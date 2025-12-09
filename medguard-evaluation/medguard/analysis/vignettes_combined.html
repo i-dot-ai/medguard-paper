@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Vignettes - Combined</title>
+    <script>
+        // ========== DATA INPUT SECTION ==========
+        // Column widths: specify as array of widths (e.g., ["200px", "300px", "250px"])
+        // or use percentages (e.g., ["33%", "33%", "34%"]) or leave empty for auto
+        const columnWidths = ["45%", "30%", "25%"]; // e.g., ["30%", "35%", "35%"] or ["250px", "300px", "300px"]
+        
+        const patientsData = [
+            {
+                patientId: "5a7a8b5ebe47b8e9",
+                overview: "Starts antidepressant in patient without understanding of other management strategies",
+                issues: [
+                    "Severe depression (PHQ‑9 23) with no active antidepressant therapy",
+                    "Borderline vitamin D insufficiency in a patient with osteoporosis"
+                ],
+                intervention: "Start sertraline 50 mg orally once daily today, arrange a mental health review (within 7 days) to monitor response. Prescribe cholecalciferol (vitamin D3) 1000 IU orally daily and repeat the 25‑OH‑vitamin D level in 3 months to ensure adequacy for bone health.",
+                issueCorrectness: [true, true],
+                issueComments: [
+                    "There are other valid management strategies for depression including talking therapies, CBT, etc which the patient may be accessing. We don't have sufficient information",
+                    ""
+                ],
+                interventionCorrectness: "partial",
+                interventionComment: "Would not advise antidepressant without further information on other strategies being utilised and patient preference on medication. Vitamin D replacement is fine."
+            },
+            {
+                patientId: "d8b9822ffc5cfe59",
+                overview: "Hallucinates that Monomil is a clopidogrel",
+                issues: [
+                    "Prolonged dual antiplatelet therapy (aspirin 75 mg + clopidogrel Monomil XL 60 mg) without documented recent indication, increasing bleeding risk."
+                ],
+                intervention: "Discontinue Monomil XL (clopidogrel) 60 mg daily after confirming no recent indication for dual antiplatelet therapy; continue aspirin 75 mg daily and monitor for any increase in angina symptoms or adverse events.",
+                issueCorrectness: [false],
+                issueComments: [
+                    "MONOMIL XL is a form of isosorbide mononitrate which is used for angina symptoms. It does not contain clopidogrel. Patient is not taking dual antiplatelet."
+                ],
+                interventionCorrectness: "incorrect",
+                interventionComment: ""
+            },
+            {
+                patientId: "108cf2cc9ebd8dea",
+                overview: "Doesn't recognise that dual prescription is only way to achieve intended dose",
+                issues: [
+                    "Duplicate perindopril prescriptions (2 mg and 4 mg tablets) both active, leading to potential dosing confusion and unnecessary complexity."
+                ],
+                intervention: "Discontinue one of the perindopril prescriptions and consolidate the dose to a single prescription (e.g. prescribe a single 6 mg tablet).",
+                issueCorrectness: [false],
+                issueComments: [
+                    "The total intended dose is 6mg, there is no 6mg tablet available"
+                ],
+                interventionCorrectness: "incorrect",
+                interventionComment: ""
+            }
+        ];
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'DejaVu Sans', sans-serif;
+            background-color: #ffffff;
+            padding: 10px;
+            line-height: 1.3;
+        }
+
+        .vignettes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .vignettes-table td {
+            vertical-align: top;
+            padding: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .vignettes-table .row-label {
+            font-size: 8px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            vertical-align: middle;
+            width: 20px;
+            padding: 2px 2px;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+
+        .vignettes-table td.overview-cell {
+            padding: 0;
+            height: 1px;
+        }
+
+        .overview-wrapper {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+        }
+
+        .patient-overview {
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+            line-height: 1.3;
+            text-align: center;
+        }
+
+        .vignettes-table td.has-issues {
+            padding: 0;
+            height: 1px;
+        }
+
+        .issues-wrapper {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .issue-item {
+            padding: 5px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #ddd;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .issue-item:last-child {
+            border-bottom: none;
+        }
+
+        .issue-item.correct {
+            background: rgba(127, 179, 162, 0.2);
+        }
+
+        .issue-item.incorrect {
+            background: rgba(217, 136, 128, 0.2);
+        }
+
+        .issue-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+            margin-bottom: 3px;
+        }
+
+        .issue-symbol {
+            font-size: 12px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .issue-symbol.correct {
+            color: #27ae60;
+        }
+
+        .issue-symbol.incorrect {
+            color: #e74c3c;
+        }
+
+        .issue-text {
+            flex: 1;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .issue-comment {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+            margin-top: 3px;
+            padding: 4px 6px;
+            background: #ffffff;
+            border-radius: 2px;
+        }
+
+        .vignettes-table td.intervention-container {
+            padding: 0;
+            height: 1px;
+        }
+
+        .intervention-wrapper {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 5px;
+            background: #f9f9f9;
+        }
+
+        .vignettes-table td.intervention-container.correct .intervention-wrapper {
+            background: rgba(127, 179, 162, 0.2);
+        }
+
+        .vignettes-table td.intervention-container.partial .intervention-wrapper {
+            background: rgba(244, 165, 130, 0.2);
+        }
+
+        .vignettes-table td.intervention-container.incorrect .intervention-wrapper {
+            background: rgba(217, 136, 128, 0.2);
+        }
+
+        .intervention-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+            margin-bottom: 0px;
+        }
+
+        .intervention-symbol {
+            font-size: 12px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .intervention-symbol.correct {
+            color: #27ae60;
+        }
+
+        .intervention-symbol.partial {
+            color: #e67e22;
+        }
+
+        .intervention-symbol.incorrect {
+            color: #e74c3c;
+        }
+
+        .intervention-text {
+            flex: 1;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .intervention-comment {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+            margin-top: 3px;
+            padding: 4px 6px;
+            background: #ffffff;
+            border-radius: 2px;
+        }
+
+        @media print {
+            body {
+                padding: 10px;
+            }
+            .vignettes-table {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <table class="vignettes-table" id="vignettesTable"></table>
+
+    <script>
+        const table = document.getElementById('vignettesTable');
+
+        // Create overview row
+        const overviewRow = document.createElement('tr');
+        const overviewLabelTd = document.createElement('td');
+        overviewLabelTd.className = 'row-label';
+        overviewRow.appendChild(overviewLabelTd);
+
+        patientsData.forEach((patientData, index) => {
+            const td = document.createElement('td');
+            td.className = 'overview-cell';
+            if (columnWidths[index]) {
+                td.style.width = columnWidths[index];
+            }
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'overview-wrapper';
+            
+            if (patientData.overview) {
+                const overview = document.createElement('div');
+                overview.className = 'patient-overview';
+                overview.textContent = patientData.overview;
+                wrapper.appendChild(overview);
+            }
+            
+            td.appendChild(wrapper);
+            overviewRow.appendChild(td);
+        });
+        table.appendChild(overviewRow);
+
+        // Create issues row
+        const issuesRow = document.createElement('tr');
+        const issuesLabelTd = document.createElement('td');
+        issuesLabelTd.className = 'row-label';
+        issuesLabelTd.textContent = 'Issues';
+        issuesRow.appendChild(issuesLabelTd);
+
+        patientsData.forEach((patientData, index) => {
+            const td = document.createElement('td');
+            td.className = 'has-issues';
+            if (columnWidths[index]) {
+                td.style.width = columnWidths[index];
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'issues-wrapper';
+
+            patientData.issues.forEach((issue, index) => {
+                const issueDiv = document.createElement('div');
+                const isCorrect = patientData.issueCorrectness[index];
+                issueDiv.className = `issue-item ${isCorrect ? 'correct' : 'incorrect'}`;
+
+                const header = document.createElement('div');
+                header.className = 'issue-header';
+
+                const symbol = document.createElement('span');
+                symbol.className = `issue-symbol ${isCorrect ? 'correct' : 'incorrect'}`;
+                symbol.innerHTML = isCorrect
+                    ? '<svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M2 6 L5 9 L10 3" stroke="#27ae60" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+                    : '<svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M3 3 L9 9 M9 3 L3 9" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/></svg>';
+
+                const text = document.createElement('div');
+                text.className = 'issue-text';
+                text.textContent = issue;
+
+                header.appendChild(symbol);
+                header.appendChild(text);
+                issueDiv.appendChild(header);
+
+                if (patientData.issueComments[index]) {
+                    const comment = document.createElement('div');
+                    comment.className = 'issue-comment';
+                    comment.textContent = patientData.issueComments[index];
+                    issueDiv.appendChild(comment);
+                }
+
+                wrapper.appendChild(issueDiv);
+            });
+
+            td.appendChild(wrapper);
+            issuesRow.appendChild(td);
+        });
+        table.appendChild(issuesRow);
+
+        // Create intervention row
+        const interventionRow = document.createElement('tr');
+        const interventionLabelTd = document.createElement('td');
+        interventionLabelTd.className = 'row-label';
+        interventionLabelTd.textContent = 'Intervention';
+        interventionRow.appendChild(interventionLabelTd);
+
+        patientsData.forEach((patientData, index) => {
+            const td = document.createElement('td');
+            td.className = `intervention-container ${patientData.interventionCorrectness}`;
+            if (columnWidths[index]) {
+                td.style.width = columnWidths[index];
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'intervention-wrapper';
+
+            const interventionHeader = document.createElement('div');
+            interventionHeader.className = 'intervention-header';
+
+            const interventionSymbol = document.createElement('span');
+            interventionSymbol.className = `intervention-symbol ${patientData.interventionCorrectness}`;
+
+            if (patientData.interventionCorrectness === 'correct') {
+                interventionSymbol.innerHTML = '<svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M2 6 L5 9 L10 3" stroke="#27ae60" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            } else if (patientData.interventionCorrectness === 'partial') {
+                interventionSymbol.textContent = '≈';
+            } else {
+                interventionSymbol.innerHTML = '<svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"><path d="M3 3 L9 9 M9 3 L3 9" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/></svg>';
+            }
+
+            const interventionText = document.createElement('div');
+            interventionText.className = 'intervention-text';
+            interventionText.textContent = patientData.intervention;
+
+            interventionHeader.appendChild(interventionSymbol);
+            interventionHeader.appendChild(interventionText);
+            wrapper.appendChild(interventionHeader);
+
+            // Add intervention comment if present
+            if (patientData.interventionComment) {
+                const comment = document.createElement('div');
+                comment.className = 'intervention-comment';
+                comment.textContent = patientData.interventionComment;
+                wrapper.appendChild(comment);
+            }
+
+            td.appendChild(wrapper);
+            interventionRow.appendChild(td);
+        });
+        table.appendChild(interventionRow);
+    </script>
+</body>
+</html>

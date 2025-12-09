@@ -1,0 +1,3 @@
+metric,probability,n_runs,n_patients
+P(another run says True | one run says True),0.9625369921980091,1652,182
+P(another run says False | one run says False),0.6294078509647375,167,182

@@ -1,0 +1,23 @@
+VIGNETTE FAILURE MODE ANALYSIS SUMMARY
+======================================================================
+
+Total patients analyzed: 148
+  Level 1 (False Positive): 12
+  Level 2 (Issues Partially Correct): 85
+  Level 3 (Intervention Incorrect/Partial): 50
+
+FAILURE MODE COUNTS BY CATEGORY
+----------------------------------------------------------------------
+Category                                          L1     L2     L3  Total
+----------------------------------------------------------------------
+Premature action without information               3     12     28     43
+Not considering patient specific context           3     23     10     36
+Unsafe medication transitions                      2      1     20     23
+Missed clinical issues                             0     19      3     22
+Duplicate Prescription Errors                      4     17      0     21
+Healthcare system context                          3      6      2     11
+Guideline misapplication                           2      7      2     11
+Pharmacological knowledge gaps                     1      6      2      9
+Hallucination                                      1      4      0      5
+----------------------------------------------------------------------
+TOTAL                                             19     95     67    181

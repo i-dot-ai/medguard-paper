@@ -1,0 +1,11 @@
+failure_mode,count
+knowledge_gap,49
+input_processing_error,18
+non_critical_omission,17
+other,17
+guideline_non_adherence,15
+confidence_calibration_error,15
+reasoning_error,12
+safety_critical_omission,5
+hallucination,4
+quantitative_error,3

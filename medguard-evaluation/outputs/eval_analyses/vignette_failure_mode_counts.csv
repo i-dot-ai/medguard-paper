@@ -1,0 +1,10 @@
+category,level_1,level_2,level_3,total
+Duplicate Prescription Errors,4,17,0,21
+Unsafe medication transitions,2,1,20,23
+Pharmacological knowledge gaps,1,6,2,9
+Premature action without information,3,12,28,43
+Not considering patient specific context,3,23,10,36
+Hallucination,1,4,0,5
+Healthcare system context,3,6,2,11
+Guideline misapplication,2,7,2,11
+Missed clinical issues,0,19,3,22

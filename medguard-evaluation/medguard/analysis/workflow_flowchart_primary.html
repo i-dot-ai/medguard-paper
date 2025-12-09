@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedGuard Primary Evaluation Workflow</title>
+    <style>
+        /* MedGuard Style Guide - CSS Variables */
+        :root {
+            /* Semantic colors */
+            --color-correct: #2D7D90;
+            --color-true-negative: #7CB4B8;
+            --color-failure-level-3: #F0C05A;
+            --color-failure-level-2: #E07B4C;
+            --color-false-negative: #C44D56;
+            
+            /* Neutral colors */
+            --color-neutral-light: #E8E8E8;
+            --color-neutral-mid: #B0B0B0;
+            --color-neutral-dark: #4A4A4A;
+            
+            /* Typography */
+            --font-family: 'Source Sans Pro', Arial, Helvetica, sans-serif;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: #ffffff;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .workflow-container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .workflow-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .workflow-table td {
+            padding: 5px;
+            text-align: center;
+            vertical-align: top;
+            border-right: 1px solid var(--color-neutral-light);
+        }
+
+        .workflow-table td:last-child {
+            border-right: none;
+        }
+
+        .workflow-table tr.graphics-row td {
+            vertical-align: middle;
+        }
+
+        .stage {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .stage-number {
+            display: none;
+        }
+
+        .stage-title {
+            font-size: 10pt;
+            font-weight: 600;
+            margin-bottom: 0px;
+            color: var(--color-neutral-dark);
+        }
+
+        .stage-description {
+            font-size: 9pt;
+            line-height: 1.6;
+            color: var(--color-neutral-dark);
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .stage-description ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .stage-description li {
+            margin: 5px 0;
+        }
+
+        .stage-description li:before {
+            content: "•";
+            margin-right: 8px;
+            color: var(--color-neutral-mid);
+        }
+
+        /* Patient data visualization */
+        .patient-viz {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .patient-data-container {
+            background: var(--color-neutral-light);
+            border-radius: 4px;
+            padding: 10px;
+            display: inline-block;
+            max-width: fit-content;
+        }
+
+        .patient-prompt-title {
+            font-size: 8pt;
+            color: var(--color-neutral-dark);
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .system-analysis-container {
+            background: rgba(45, 125, 144, 0.12);
+            border-radius: 4px;
+            padding: 10px;
+            display: inline-block;
+            max-width: fit-content;
+        }
+
+        .system-analysis-title {
+            font-size: 8pt;
+            color: var(--color-neutral-dark);
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .viz-center-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .viz-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 8pt;
+        }
+
+        .viz-label {
+            min-width: 80px;
+            text-align: right;
+            color: var(--color-neutral-dark);
+            font-weight: 500;
+            font-size: 8pt;
+        }
+
+        .viz-box {
+            height: 18px;
+            width: 90px;
+            background: var(--color-neutral-mid);
+            border-radius: 2px;
+        }
+
+        .viz-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .viz-item {
+            height: 6px;
+            width: 90px;
+            background: var(--color-neutral-mid);
+            border-radius: 1px;
+        }
+
+        .viz-item-green {
+            background: var(--color-correct);
+        }
+
+        .viz-item-red {
+            background: var(--color-false-negative);
+        }
+
+        .viz-box-amber {
+            background: var(--color-failure-level-2);
+        }
+
+        .viz-box-comments {
+            background: #fff;
+            border: 1px solid var(--color-neutral-mid);
+        }
+
+        /* Analysis visualization for stage 2 */
+        .analysis-viz {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .analysis-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .clinician-review-left {
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .analysis-right {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .system-analysis-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .viz-prompt-bar {
+            background: var(--color-neutral-light);
+            border-radius: 3px;
+            padding: 6px;
+            font-size: 8pt;
+            color: var(--color-neutral-dark);
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .viz-prompt-label {
+            font-weight: 500;
+        }
+
+        .patient-data-mini-container {
+            padding: 6px;
+        }
+
+        .patient-data-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+        }
+
+        .analysis-arrow {
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .viz-symbol {
+            font-size: 8pt;
+            font-weight: 600;
+            margin-left: 0px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 16px;
+        }
+
+        .viz-symbol-tick {
+            color: var(--color-correct);
+        }
+
+        .viz-symbol-cross {
+            color: var(--color-false-negative);
+        }
+
+        .viz-symbol-approx {
+            color: var(--color-failure-level-2);
+        }
+
+        .viz-symbol svg {
+            width: 8px;
+            height: 8px;
+        }
+
+        .viz-with-symbol {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .viz-items-with-symbols {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .viz-item-row {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        @media (max-width: 1200px) {
+            .workflow {
+                flex-direction: column;
+            }
+
+            .arrow {
+                transform: rotate(90deg);
+                margin: 10px 0;
+            }
+
+            .stage {
+                min-height: auto;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .workflow-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="workflow-container">
+        <table class="workflow-table">
+            <tr class="header-row">
+                <td class="stage-1">
+                    <div class="stage-number">1</div>
+                    <div class="stage-title">Longitudinal patient profiles generated<br>from EHR data</div>
+                </td>
+                <td class="stage-2">
+                    <div class="stage-number">2</div>
+                    <div class="stage-title">System prompted to flag medication safety<br>issues and propose interventions</div>
+                </td>
+                <td class="stage-3">
+                    <div class="stage-number">3</div>
+                    <div class="stage-title">Clinician reviews cases manually</div>
+                </td>
+            </tr>
+            <tr class="graphics-row">
+                <td class="stage-1">
+                <div class="patient-viz">
+                    <div class="patient-data-container">
+                        <div class="patient-prompt-title">Patient prompt</div>
+                        <div class="viz-center-group">
+                            <div class="viz-row">
+                                <span class="viz-label">Demographics</span>
+                                <div class="viz-box"></div>
+                            </div>
+                            <div class="viz-row">
+                                <span class="viz-label">QOF Registers</span>
+                                <div class="viz-box"></div>
+                            </div>
+                            <div class="viz-row">
+                                <span class="viz-label">Events</span>
+                                <div class="viz-list">
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                </div>
+                            </div>
+                            <div class="viz-row">
+                                <span class="viz-label">Medications</span>
+                                <div class="viz-list">
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </td>
+                <td class="stage-2">
+                <div class="analysis-viz">
+                    <div class="analysis-left">
+                        <div class="viz-prompt-bar">
+                            <span class="viz-prompt-label">System prompt</span>
+                        </div>
+                        <div class="patient-data-container patient-data-mini-container">
+                            <div class="patient-prompt-title">Patient prompt</div>
+                            <div class="patient-data-visual">
+                                <div class="viz-box"></div>
+                                <div class="viz-box"></div>
+                                <div class="viz-list">
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                </div>
+                                <div class="viz-list">
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analysis-arrow">
+                        <svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 15 L20 15 L15 10 M20 15 L15 20"
+                                  stroke="#4A4A4A"
+                                  stroke-width="1.5"
+                                  fill="none"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="analysis-right">
+                        <div class="system-analysis-container">
+                            <div class="system-analysis-title">System Analysis</div>
+                            <div class="viz-center-group">
+                                <div class="viz-row">
+                                    <span class="viz-label">Summary</span>
+                                    <div class="viz-box"></div>
+                                </div>
+                                <div class="viz-row">
+                                    <span class="viz-label">Clinical issues</span>
+                                    <div class="viz-list">
+                                        <div class="viz-item"></div>
+                                        <div class="viz-item"></div>
+                                        <div class="viz-item"></div>
+                                    </div>
+                                </div>
+                                <div class="viz-row">
+                                    <span class="viz-label">Intervention</span>
+                                    <div class="viz-box"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </td>
+                <td class="stage-3">
+                <div class="analysis-viz">
+                    <div class="clinician-review-left">
+                        <div class="patient-data-container patient-data-mini-container">
+                            <div class="patient-prompt-title">Patient data</div>
+                            <div class="patient-data-visual">
+                                <div class="viz-box"></div>
+                                <div class="viz-box"></div>
+                                <div class="viz-list">
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                </div>
+                                <div class="viz-list">
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="system-analysis-container">
+                            <div class="system-analysis-title">System Analysis</div>
+                            <div class="system-analysis-visual">
+                                <div class="viz-box"></div>
+                                <div class="viz-list">
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                </div>
+                                <div class="viz-box"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analysis-arrow">
+                        <svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 15 L20 15 L15 10 M20 15 L15 20"
+                                  stroke="#4A4A4A"
+                                  stroke-width="1.5"
+                                  fill="none"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="analysis-right">
+                        <div class="system-analysis-container">
+                            <div class="system-analysis-title">Reviewed System analysis</div>
+                            <div class="viz-center-group">
+                                <div class="viz-row">
+                                    <span class="viz-label">Clinical issues</span>
+                                    <div class="viz-items-with-symbols">
+                                        <div class="viz-item-row">
+                                            <div class="viz-item viz-item-green"></div>
+                                            <span class="viz-symbol viz-symbol-tick">
+                                                <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M2 6 L5 9 L10 3"
+                                                          stroke="#2D7D90"
+                                                          stroke-width="2"
+                                                          fill="none"
+                                                          stroke-linecap="round"
+                                                          stroke-linejoin="round"/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class="viz-item-row">
+                                            <div class="viz-item viz-item-red"></div>
+                                            <span class="viz-symbol viz-symbol-cross">
+                                                <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M3 3 L9 9 M9 3 L3 9"
+                                                          stroke="#C44D56"
+                                                          stroke-width="2"
+                                                          stroke-linecap="round"/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class="viz-item-row">
+                                            <div class="viz-item viz-item-green"></div>
+                                            <span class="viz-symbol viz-symbol-tick">
+                                                <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M2 6 L5 9 L10 3"
+                                                          stroke="#2D7D90"
+                                                          stroke-width="2"
+                                                          fill="none"
+                                                          stroke-linecap="round"
+                                                          stroke-linejoin="round"/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="viz-row">
+                                    <span class="viz-label">Intervention</span>
+                                    <div class="viz-with-symbol">
+                                        <div class="viz-box viz-box-amber"></div>
+                                        <span class="viz-symbol viz-symbol-approx">≈</span>
+                                    </div>
+                                </div>
+                                <div class="viz-row">
+                                    <span class="viz-label">Comments</span>
+                                    <div class="viz-with-symbol">
+                                        <div class="viz-box viz-box-comments"></div>
+                                        <span class="viz-symbol" style="visibility: hidden;">≈</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

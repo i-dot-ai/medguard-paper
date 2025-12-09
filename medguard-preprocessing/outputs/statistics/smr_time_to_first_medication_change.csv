@@ -1,0 +1,13 @@
+medication_category,group,n_observations,median_days,test_statistic,p_value
+repeat_only,positive_outcome,758,12.0,,
+repeat_only,negative_outcome,802,21.0,,
+repeat_only,difference,,-9.0,,
+repeat_only,mann_whitney_u,,,229654.5,0.0
+non_repeat_only,positive_outcome,941,13.0,,
+non_repeat_only,negative_outcome,1506,20.0,,
+non_repeat_only,difference,,-7.0,,
+non_repeat_only,mann_whitney_u,,,577106.5,0.0
+all_medications,positive_outcome,1699,12.0,,
+all_medications,negative_outcome,2308,21.0,,
+all_medications,difference,,-9.0,,
+all_medications,mann_whitney_u,,,1543930.0,0.0

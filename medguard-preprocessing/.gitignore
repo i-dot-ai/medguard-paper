@@ -1,0 +1,16 @@
+patient-data/
+patient-data-subset/
+patient-data-test-set/
+playground.ipynb
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+inputs/
+# Exclude outputs except statistics folder
+outputs/*
+!outputs/statistics/
+notebooks/
+**.ipynb
+# Exclude CSV files except those in outputs/statistics/
+**.csv
+!outputs/statistics/**/*.csv
+!outputs/statistics/**/*.png

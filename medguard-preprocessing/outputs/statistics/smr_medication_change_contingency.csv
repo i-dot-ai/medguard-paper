@@ -1,0 +1,5 @@
+outcome_type,change_status,count,total,percentage
+positive_outcome,no_change,579,4440,13.0
+positive_outcome,has_change,1369,4440,30.8
+negative_outcome,no_change,1153,4440,26.0
+negative_outcome,has_change,1339,4440,30.2

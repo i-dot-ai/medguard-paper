@@ -1,0 +1,10 @@
+Category,Duplicate Prescription Errors,Unsafe medication transitions,Pharmacological knowledge gaps,Premature action without information,Not considering patient context,Hallucination,Healthcare system context,Guideline misapplication,Missed clinical issues
+Duplicate Prescription Errors,21,1,1,2,1,0,2,1,0
+Unsafe medication transitions,1,23,0,12,2,0,1,1,0
+Pharmacological knowledge gaps,1,0,9,0,1,0,0,0,0
+Premature action without information,2,12,0,43,4,0,3,0,3
+Not considering patient context,1,2,1,4,36,1,1,0,0
+Hallucination,0,0,0,0,1,5,0,0,0
+Healthcare system context,2,1,0,3,1,0,11,1,0
+Guideline misapplication,1,1,0,0,0,0,1,11,0
+Missed clinical issues,0,0,0,3,0,0,0,0,22

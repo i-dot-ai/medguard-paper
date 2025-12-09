@@ -1,0 +1,4 @@
+field_name,total_records,non_null_records,completion_rate_pct
+GP Events - EventDate,199615749,199522939.0,100.0
+GP Events - SuppliedCode,199615749,199598698.0,100.0
+GP Events - Description,171903103,171903103.0,100.0

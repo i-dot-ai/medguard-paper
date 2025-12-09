@@ -1,0 +1,20 @@
+================================================================================
+GROUND TRUTH PERFORMANCE METRICS
+================================================================================
+
+Positive Cases: 206
+Level 1: Any issue identified: 206/206 - Cumulative Rate: 100.00%
+Level 1: No issue identified: 0/206
+Level 2: Issues correct: 121/206 - Cumulative Rate: 58.74%
+Level 2: Issues partially correct: 85/206 - Cumulative Rate: 41.26%
+Level 2: Issues incorrect: 0/206 - Rate: 0.00% - Cumulative Rate: 0.00%
+Level 3: Intervention correct 71/121 - Cumulative Rate: 58.68%
+Level 3: Intervention partially correct 46/121 - Cumulative Rate: 38.02%
+Level 3: Intervention incorrect 4/121 - Cumulative Rate: 3.31%
+
+Negative Cases: 71
+Level 1: True Negative (no issue): 59/71 - Cumulative Rate: 83.10%
+Level 1: False Positive (issue): 12/71 - Cumulative Rate: 16.90%
+
+
+================================================================================

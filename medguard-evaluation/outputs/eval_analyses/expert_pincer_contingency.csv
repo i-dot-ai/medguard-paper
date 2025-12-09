@@ -1,0 +1,15 @@
+metric,description,count,percentage
+True Agreement (TP),"PINCER positive, Expert agrees",69,42.331288343558285
+False Positive (FP),"PINCER positive, Expert disagrees",4,2.4539877300613497
+False Negative (FN),"PINCER negative, Expert found issues",73,44.785276073619634
+True Agreement (TN),"PINCER negative, Expert agrees",17,10.429447852760736
+PINCER Positive Total,Total cases where PINCER flagged issue,73,44.785276073619634
+PINCER Negative Total,Total cases where PINCER no issue,90,55.21472392638037
+Expert Issue Total,Total cases where expert found issue,142,87.11656441717791
+Expert No Issue Total,Total cases where expert found no issue,21,12.883435582822086
+Total,Total valid cases,163,100.0
+Accuracy,Overall agreement rate,,52.760736196319016
+Sensitivity (Recall),TP / (TP + FN),,48.59154929577465
+Specificity,TN / (TN + FP),,80.95238095238095
+PPV (Precision),TP / (TP + FP),,94.52054794520548
+NPV,TN / (TN + FN),,18.88888888888889

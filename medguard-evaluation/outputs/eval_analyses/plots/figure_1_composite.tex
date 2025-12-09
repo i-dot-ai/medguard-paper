@@ -1,0 +1,44 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{adjustbox}
+\usepackage[margin=1in]{geometry}
+
+\begin{document}
+
+\begin{figure}[htbp]
+\centering
+\begin{tabular}{@{}c@{}}
+    % Row 1: Panel (a) - full width workflow diagram
+    \begin{minipage}{\textwidth}
+        \textbf{a}\\[2pt]
+        \includegraphics[clip, trim=0cm 6.5cm 0cm 6.5cm, width=\textwidth]{figures/figure_1a.pdf}
+    \end{minipage}\\[16pt]
+
+    % Row 2: Panel (b) ~42%, Panel (c) ~56%
+    \begin{minipage}[t]{0.42\textwidth}
+        \textbf{b}\\[2pt]
+        \includegraphics[width=\textwidth]{figures/figure_1b.pdf}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.56\textwidth}
+        \textbf{c}\\[2pt]
+        \includegraphics[width=\textwidth]{figures/figure_1c.pdf}
+    \end{minipage}\\[16pt]
+
+    % Row 3: Panel (d) ~38%, Panel (e) ~60%
+    \begin{minipage}[t]{0.38\textwidth}
+        \textbf{d}\\[2pt]
+        \includegraphics[width=\textwidth]{figures/figure_1d.pdf}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.60\textwidth}
+        \textbf{e}\\[2pt]
+        \includegraphics[width=\textwidth]{figures/figure_1e.pdf}
+    \end{minipage}
+\end{tabular}
+\caption{\textbf{Evaluation framework and primary findings.} \textbf{(a)} Evaluation workflow: patient profiles are processed by the System; a clinician reviews outputs marking issues and interventions as correct(\textcolor{green}{\checkmark}), partially correct (\textcolor{orange}{$\approx$}), or incorrect (\textcolor{red}{\texttimes}). \textbf{(b)} Hierarchical performance across 277 patients at three stages: binary classification (Stage 1), issue correctness (Stage 2), and intervention appropriateness (Stage 3). \textbf{(c)} Distribution of 178 failure instances by failure reason and evaluation stage. \textbf{(d)} Correlation matrix showing patient complexity variables (age, medication count, QoF registers) and their relationship to clinician scores. \textbf{(e)} Model performance comparison across six configurations.}
+\label{fig:figure1}
+\end{figure}
+
+\end{document}

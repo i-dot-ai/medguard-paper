@@ -1,0 +1,12 @@
+metric,value,description
+TP,87.0,"True Positives (PINCER flagged, System found issues)"
+FP,77.0,"False Positives (PINCER didn't flag, System found issues)"
+TN,13.0,"True Negatives (PINCER didn't flag, System found no issues)"
+FN,5.0,"False Negatives (PINCER flagged, System found no issues)"
+Precision,0.5304878048780488,TP / (TP + FP)
+Recall,0.9456521739130435,TP / (TP + FN) - Sensitivity
+F1,0.6796875,Harmonic mean of Precision and Recall
+Accuracy,0.5494505494505495,(TP + TN) / Total
+Specificity,0.14444444444444443,TN / (TN + FP)
+PPV,0.5304878048780488,Positive Predictive Value (same as Precision)
+NPV,0.7222222222222222,Negative Predictive Value: TN / (TN + FN)

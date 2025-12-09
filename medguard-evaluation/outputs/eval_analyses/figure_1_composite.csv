@@ -1,0 +1,21 @@
+metric_type,metric_name,value,level_1,level_2,level_3
+ground_truth,positive,206,,,
+ground_truth,negative,71,,,
+ground_truth,positive_any_issue,206,,,
+ground_truth,positive_no_issue,0,,,
+ground_truth,negative_any_issue,12,,,
+ground_truth,negative_no_issue,59,,,
+ground_truth,positive_all_correct,121,,,
+ground_truth,positive_some_correct,85,,,
+ground_truth,positive_no_correct,0,,,
+ground_truth,all_correct_correct_intervention,71,,,
+ground_truth,all_correct_partial_intervention,46,,,
+ground_truth,all_correct_incorrect_intervention,4,,,
+ground_truth,some_correct_correct_intervention,17,,,
+ground_truth,some_correct_partial_intervention,48,,,
+ground_truth,some_correct_incorrect_intervention,20,,,
+failure_mode,Acts decisively when uncertainty should prompt further information gathering,51,3,19,29
+failure_mode,Applies standardised guidelines without adjusting for individual patient context,49,3,34,12
+failure_mode,Understands formal documentation but misunderstands how healthcare is actually delivered,30,6,22,2
+failure_mode,Produces sensible clinical reasoning structure but unreliable about factual content,25,4,17,4
+failure_mode,Identifies correct clinical endpoints but recommends unsafe pathways to reach them,23,2,1,20

@@ -1,0 +1,2 @@
+total_patients_with_imd,mean_imd,stddev_imd,min_imd,max_imd,median_imd,q1_imd,q3_imd
+1083118,12784.09,10528.21,-1,32843,10844.0,2438,22208

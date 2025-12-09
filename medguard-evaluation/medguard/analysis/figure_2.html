@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedGuard Figure 2: Failure Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        @page {
+            size: auto;
+            margin: 0;
+        }
+
+        @media print {
+            html, body {
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', Arial, sans-serif;
+            background: white;
+            color: #1a1a1a;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            font-size: 7.5pt;
+            line-height: 1.35;
+        }
+
+        /* Main table */
+        .failure-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1.5px solid #1a1a1a;
+            border-bottom: 1.5px solid #1a1a1a;
+        }
+
+        .failure-table th {
+            padding: 8px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 8pt;
+            border-bottom: 1px solid #1a1a1a;
+            vertical-align: bottom;
+        }
+
+        .failure-table th.row-header {
+            width: 55px;
+        }
+
+        .failure-table td {
+            padding: 5px 6px;
+            vertical-align: top;
+            border-bottom: 0.5px solid #ddd;
+        }
+
+        .failure-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Row label column */
+        .row-label-cell {
+            font-size: 7pt;
+            font-weight: 600;
+            color: #666;
+            width: 55px;
+            vertical-align: top;
+            padding-right: 6px;
+        }
+
+        /* Category row */
+        .category-value {
+            font-size: 7.5pt;
+            color: #444;
+        }
+
+        /* Description row */
+        .description-text {
+            font-size: 7pt;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        /* Failure modes with dots */
+        .failure-modes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mode-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .mode-label {
+            font-size: 6.5pt;
+            color: #444;
+            line-height: 1.3;
+        }
+
+        .mode-dots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+
+        .mode-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Column-specific dot colors */
+        .dots-overconfidence .mode-dot { background: #D4A84B; }
+        .dots-protocol-patient .mode-dot { background: #8B85B1; }
+        .dots-protocol-practice .mode-dot { background: #CD6D42; }
+        .dots-factual .mode-dot { background: #5A9BC7; }
+        .dots-process .mode-dot { background: #B04550; }
+
+        .dot-legend {
+            font-size: 6pt;
+            color: #888;
+        }
+
+        /* Vignette styling */
+        .vignette-container {
+            padding-top: 0;
+            background: #fff;
+            padding: 6px;
+            border: 1px solid #ddd;
+        }
+
+        .vignette-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .vignette-id {
+            font-size: 6.5pt;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .severity-indicator {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .severity-label {
+            font-size: 5.5pt;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        .severity-bars {
+            display: flex;
+            gap: 1px;
+        }
+
+        .severity-bar {
+            width: 3px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 1px;
+        }
+
+        /* Semantic severity colors: green (low) to red (high) */
+        .severity-1 .severity-bar:nth-child(1) { background: #4CAF50; }
+        .severity-2 .severity-bar:nth-child(1) { background: #8BC34A; }
+        .severity-2 .severity-bar:nth-child(2) { background: #8BC34A; }
+        .severity-3 .severity-bar:nth-child(1) { background: #FFC107; }
+        .severity-3 .severity-bar:nth-child(2) { background: #FFC107; }
+        .severity-3 .severity-bar:nth-child(3) { background: #FFC107; }
+        .severity-4 .severity-bar:nth-child(1) { background: #FF9800; }
+        .severity-4 .severity-bar:nth-child(2) { background: #FF9800; }
+        .severity-4 .severity-bar:nth-child(3) { background: #FF9800; }
+        .severity-4 .severity-bar:nth-child(4) { background: #FF9800; }
+        .severity-5 .severity-bar:nth-child(1) { background: #F44336; }
+        .severity-5 .severity-bar:nth-child(2) { background: #F44336; }
+        .severity-5 .severity-bar:nth-child(3) { background: #F44336; }
+        .severity-5 .severity-bar:nth-child(4) { background: #F44336; }
+        .severity-5 .severity-bar:nth-child(5) { background: #F44336; }
+
+        .vignette-title {
+            font-size: 7pt;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            line-height: 1.35;
+        }
+
+        .vignette-section {
+            margin-bottom: 4px;
+        }
+
+        .vignette-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-label {
+            font-size: 6pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+
+        .context-text {
+            font-size: 6.5pt;
+            color: #555;
+            line-height: 1.35;
+            font-style: italic;
+        }
+
+        .issue-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 4px;
+            margin-bottom: 2px;
+            padding: 3px 4px;
+        }
+
+        .issue-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .issue-row.correct {
+            background: rgba(45, 125, 144, 0.06);
+        }
+
+        .issue-row.incorrect {
+            background: rgba(196, 77, 86, 0.06);
+        }
+
+        .status-icon {
+            flex-shrink: 0;
+            width: 10px;
+            font-weight: 700;
+            font-size: 7pt;
+            line-height: 1.3;
+        }
+
+        .status-correct { color: #2D7D90; }
+        .status-incorrect { color: #C44D56; }
+
+        .issue-text {
+            flex: 1;
+            font-size: 6.5pt;
+            line-height: 1.35;
+        }
+
+        .review-section {
+            margin-top: 6px;
+            padding-top: 5px;
+            border-top: 0.5px solid #ddd;
+        }
+
+        .review-label {
+            font-size: 6pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #2D7D90;
+            margin-bottom: 2px;
+        }
+
+        .review-text {
+            color: #333;
+            font-size: 6.5pt;
+            line-height: 1.35;
+        }
+    </style>
+</head>
+<body>
+    <table class="failure-table">
+        <thead>
+            <tr>
+                <th class="row-header"></th>
+                <th>Overconfidence in uncertainty</th>
+                <th>Protocol vs patient gap</th>
+                <th>Protocol vs practice gap</th>
+                <th>Coherent but factually incorrect</th>
+                <th>Process blindness</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Row 1: Category -->
+            <tr>
+                <td class="row-label-cell">Category</td>
+                <td><div class="category-value">Contextual Reasoning</div></td>
+                <td><div class="category-value">Contextual Reasoning</div></td>
+                <td><div class="category-value">Contextual Reasoning</div></td>
+                <td><div class="category-value">Factual Error</div></td>
+                <td><div class="category-value">Contextual Reasoning</div></td>
+            </tr>
+
+            <!-- Row 2: Description -->
+            <tr>
+                <td class="row-label-cell">Description</td>
+                <td><div class="description-text">Acts decisively when uncertainty should prompt further information gathering</div></td>
+                <td><div class="description-text">Applies standardised guidelines without adjusting for individual patient context, goals of care, or competing risks</div></td>
+                <td><div class="description-text">Understands formal documentation but misunderstands how healthcare is actually delivered</div></td>
+                <td><div class="description-text">Produces sensible clinical reasoning structure but is unreliable about specific factual content</div></td>
+                <td><div class="description-text">Identifies correct clinical endpoints but recommends unsafe pathways to reach them</div></td>
+            </tr>
+
+            <!-- Row 3: Failure Modes -->
+            <tr>
+                <td class="row-label-cell">Failure Modes<br><span class="dot-legend">● = 1 case</span></td>
+                <td>
+                    <div class="failure-modes-list dots-overconfidence">
+                        <div class="mode-item">
+                            <div class="mode-label">Premature action without information gathering</div>
+                            <div class="mode-dots">
+                                <span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span>
+                            </div>
+                        </div>
+                        <div class="mode-item">
+                            <div class="mode-label">Overlooked clinical issues</div>
+                            <div class="mode-dots">
+                                <span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="failure-modes-list dots-protocol-patient">
+                        <div class="mode-item">
+                            <div class="mode-label">Not considering patient specific context</div>
+                            <div class="mode-dots">
+                                <span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span>
+                            </div>
+                        </div>
+                        <div class="mode-item">
+                            <div class="mode-label">Unnecessary flagging</div>
+                            <div class="mode-dots">
+                                <span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span>
+                            </div>
+                        </div>
+                        <div class="mode-item">
+                            <div class="mode-label">Missed deprescription opportunities</div>
+                            <div class="mode-dots">
+                                <span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="failure-modes-list dots-protocol-practice">
+                        <div class="mode-item">
+                            <div class="mode-label">Duplicate prescription errors</div>
+                            <div class="mode-dots">
+                                <span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span>
+                            </div>
+                        </div>
+                        <div class="mode-item">
+                            <div class="mode-label">Healthcare system context</div>
+                            <div class="mode-dots">
+                                <span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="failure-modes-list dots-factual">
+                        <div class="mode-item">
+                            <div class="mode-label">Hallucinations</div>
+                            <div class="mode-dots">
+                                <span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span>
+                            </div>
+                        </div>
+                        <div class="mode-item">
+                            <div class="mode-label">Pharmacological knowledge gaps</div>
+                            <div class="mode-dots">
+                                <span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span>
+                            </div>
+                        </div>
+                        <div class="mode-item">
+                            <div class="mode-label">Guideline misapplication</div>
+                            <div class="mode-dots">
+                                <span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="failure-modes-list dots-process">
+                        <div class="mode-item">
+                            <div class="mode-label">Unsafe medication transitions</div>
+                            <div class="mode-dots">
+                                <span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span><span class="mode-dot"></span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Row 4: Vignettes -->
+            <tr>
+                <td class="row-label-cell">Vignette</td>
+                <td>
+                    <div class="vignette-container">
+                        <div class="vignette-header">
+                            <span class="vignette-id">Vignette 4</span>
+                            <div class="severity-indicator">
+                                <span class="severity-label">Harm</span>
+                                <div class="severity-bars severity-2">
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="vignette-title">Starts antidepressant without considering other management strategies</div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">Patient Context</div>
+                            <div class="context-text">62-year-old female with osteoporosis, chronic back pain, and newly documented severe depression (PHQ-9: 23). Currently receiving physiotherapy and under rheumatology review.</div>
+                        </div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">System Issues</div>
+                            <div class="issue-row correct">
+                                <span class="status-icon status-correct">✓</span>
+                                <span class="issue-text">Severe depression (PHQ-9 23) with no active antidepressant therapy</span>
+                            </div>
+                            <div class="issue-row correct">
+                                <span class="status-icon status-correct">✓</span>
+                                <span class="issue-text">Borderline vitamin D insufficiency in a patient with osteoporosis</span>
+                            </div>
+                        </div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">System Intervention</div>
+                            <div class="issue-row incorrect">
+                                <span class="status-icon status-incorrect">✗</span>
+                                <span class="issue-text">Start sertraline 50 mg orally once daily today, arrange a mental health review (within 7 days) to monitor response. Prescribe cholecalciferol (vitamin D3) 1000 IU orally daily.</span>
+                            </div>
+                        </div>
+
+                        <div class="review-section">
+                            <div class="review-label">Clinician Review</div>
+                            <div class="review-text">Other valid strategies exist (talking therapies, CBT) which the patient may already be accessing. Insufficient information to recommend antidepressant. Vitamin D replacement is appropriate.</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="vignette-container">
+                        <div class="vignette-header">
+                            <span class="vignette-id">Vignette 9</span>
+                            <div class="severity-indicator">
+                                <span class="severity-label">Harm</span>
+                                <div class="severity-bars severity-1">
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="vignette-title">Recommends restarting multiple prescriptions in patient with advanced age and frailty</div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">Patient Context</div>
+                            <div class="context-text">91-year-old female with advanced frailty, coronary heart disease, CKD stage 3b, and hypertension. Resides in nursing home with palliative goals of care. Previous statin and ACE-inhibitor discontinued due to tolerability.</div>
+                        </div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">System Issues</div>
+                            <div class="issue-row incorrect">
+                                <span class="status-icon status-incorrect">✗</span>
+                                <span class="issue-text">Absence of high-intensity statin therapy for secondary prevention of coronary heart disease</span>
+                            </div>
+                            <div class="issue-row incorrect">
+                                <span class="status-icon status-incorrect">✗</span>
+                                <span class="issue-text">Absence of ACE-inhibitor therapy for hypertension, CKD protection and cardiovascular risk reduction</span>
+                            </div>
+                        </div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">System Intervention</div>
+                            <div class="issue-row incorrect">
+                                <span class="status-icon status-incorrect">✗</span>
+                                <span class="issue-text">Restart atorvastatin 40 mg once daily. Restart ramipril 2.5 mg once daily.</span>
+                            </div>
+                        </div>
+
+                        <div class="review-section">
+                            <div class="review-label">Clinician Review</div>
+                            <div class="review-text">There is nothing technically incorrect about restarting these prescriptions, but they are not clinically appropriate in the context of advanced frailty where the risk would likely outweigh the benefit.</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="vignette-container">
+                        <div class="vignette-header">
+                            <span class="vignette-id">Vignette 22</span>
+                            <div class="severity-indicator">
+                                <span class="severity-label">Harm</span>
+                                <div class="severity-bars severity-1">
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="vignette-title">Doesn't recognise dual prescription achieves intended dose</div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">Patient Context</div>
+                            <div class="context-text">58-year-old male with hypertension and type 2 diabetes. Current medications include perindopril 2 mg and perindopril 4 mg (both active prescriptions), metformin 1g twice daily, and amlodipine 5 mg.</div>
+                        </div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">System Issues</div>
+                            <div class="issue-row incorrect">
+                                <span class="status-icon status-incorrect">✗</span>
+                                <span class="issue-text">Duplicate perindopril prescriptions (2 mg and 4 mg tablets) both active, leading to potential dosing confusion and unnecessary complexity.</span>
+                            </div>
+                        </div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">System Intervention</div>
+                            <div class="issue-row incorrect">
+                                <span class="status-icon status-incorrect">✗</span>
+                                <span class="issue-text">Discontinue one of the perindopril prescriptions and consolidate to a single prescription (e.g. prescribe a single 6 mg tablet).</span>
+                            </div>
+                        </div>
+
+                        <div class="review-section">
+                            <div class="review-label">Clinician Review</div>
+                            <div class="review-text">Total intended dose is 6 mg. No 6 mg tablet exists; dual prescriptions are the standard approach.</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="vignette-container">
+                        <div class="vignette-header">
+                            <span class="vignette-id">Vignette 27</span>
+                            <div class="severity-indicator">
+                                <span class="severity-label">Harm</span>
+                                <div class="severity-bars severity-2">
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="vignette-title">Hallucinates that Monomil is a clopidogrel</div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">Patient Context</div>
+                            <div class="context-text">74-year-old male with stable angina and previous MI (2019). Current medications include aspirin 75 mg, Monomil XL 60 mg (isosorbide mononitrate), bisoprolol 5 mg, and atorvastatin 40 mg.</div>
+                        </div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">System Issues</div>
+                            <div class="issue-row incorrect">
+                                <span class="status-icon status-incorrect">✗</span>
+                                <span class="issue-text">Prolonged dual antiplatelet therapy (aspirin 75 mg + clopidogrel Monomil XL 60 mg) without documented recent indication, increasing bleeding risk.</span>
+                            </div>
+                        </div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">System Intervention</div>
+                            <div class="issue-row incorrect">
+                                <span class="status-icon status-incorrect">✗</span>
+                                <span class="issue-text">Discontinue Monomil XL (clopidogrel) 60 mg daily after confirming no recent indication for dual antiplatelet therapy; continue aspirin 75 mg daily.</span>
+                            </div>
+                        </div>
+
+                        <div class="review-section">
+                            <div class="review-label">Clinician Review</div>
+                            <div class="review-text">Monomil XL is isosorbide mononitrate for angina, not clopidogrel. Patient is not on dual antiplatelet therapy.</div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="vignette-container">
+                        <div class="vignette-header">
+                            <span class="vignette-id">Vignette 42</span>
+                            <div class="severity-indicator">
+                                <span class="severity-label">Harm</span>
+                                <div class="severity-bars severity-2">
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                    <div class="severity-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="vignette-title">Recommends abrupt cessation of amitriptyline without taper</div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">Patient Context</div>
+                            <div class="context-text">79-year-old female with ischaemic heart disease, heart failure (EF 35%), and chronic neuropathic pain. Current medications include amitriptyline 10 mg nightly (for pain), furosemide 40 mg, and ramipril 5 mg.</div>
+                        </div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">System Issues</div>
+                            <div class="issue-row correct">
+                                <span class="status-icon status-correct">✓</span>
+                                <span class="issue-text">Amitriptyline prescribed despite known ischaemic heart disease and heart failure, posing risk of cardiac arrhythmia and anticholinergic side-effects in an elderly patient</span>
+                            </div>
+                        </div>
+
+                        <div class="vignette-section">
+                            <div class="section-label">System Intervention</div>
+                            <div class="issue-row incorrect">
+                                <span class="status-icon status-incorrect">✗</span>
+                                <span class="issue-text">Stop amitriptyline 10 mg nightly immediately. If needed for sleep or neuropathic pain, consider a safer alternative.</span>
+                            </div>
+                        </div>
+
+                        <div class="review-section">
+                            <div class="review-label">Clinician Review</div>
+                            <div class="review-text">Stopping amitriptyline requires a gradual taper as it is very difficult to stop abruptly in practice.</div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

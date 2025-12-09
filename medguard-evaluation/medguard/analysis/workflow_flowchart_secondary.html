@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedGuard Secondary Evaluation Workflow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'DejaVu Sans', sans-serif;
+            background-color: #ffffff;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .workflow-container {
+            max-width: 750px;
+            width: 100%;
+        }
+
+        .workflow-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .workflow-table td {
+            padding: 5px;
+            text-align: center;
+            vertical-align: top;
+        }
+
+        .workflow-table tr.header-row td {
+            border-bottom: 2px dashed #ccc;
+        }
+
+        .workflow-table tr.graphics-row td {
+            vertical-align: middle;
+        }
+
+        .stage {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .stage-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #2c3e50;
+        }
+
+        .stage-description {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .system-analysis-container {
+            background: rgba(127, 179, 162, 0.15);
+            border-radius: 4px;
+            padding: 10px;
+            display: inline-block;
+            max-width: fit-content;
+        }
+
+        .system-analysis-title {
+            font-size: 10px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .viz-center-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .viz-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .viz-item {
+            height: 6px;
+            width: 90px;
+            background: #ccc;
+            border-radius: 1px;
+        }
+
+        .viz-item-green {
+            background: #7fb3a2;
+        }
+
+        .viz-item-red {
+            background: #d98880;
+        }
+
+        .viz-box {
+            height: 18px;
+            width: 90px;
+            background: #ccc;
+            border-radius: 2px;
+        }
+
+        .viz-box-amber {
+            background: #f4a582;
+        }
+
+        .viz-box-red {
+            background: #d98880;
+        }
+
+        .viz-box-comments {
+            background: #fff;
+            border: 1px solid #ccc;
+        }
+
+        .system-analysis-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* Evaluation visualization for stage 4 */
+        .evaluation-viz {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .evaluation-left {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .evaluation-upper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .evaluation-lower {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .future-runs-container {
+            background: rgba(168, 213, 186, 0.15);
+            border-radius: 4px;
+            padding: 6px;
+        }
+
+        .future-runs-title {
+            font-size: 10px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .future-runs-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .evaluation-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .evaluated-outputs-container {
+            background: rgba(168, 213, 186, 0.15);
+            border-radius: 4px;
+            padding: 6px;
+        }
+
+        .evaluated-outputs-title {
+            font-size: 10px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .evaluated-outputs-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .viz-ellipsis {
+            font-size: 16px;
+            color: #888;
+            font-weight: bold;
+            padding: 0 4px;
+        }
+
+        .analysis-arrow {
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .viz-symbol {
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 0px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 16px;
+        }
+
+        .viz-symbol-tick {
+            color: #27ae60;
+        }
+
+        .viz-symbol-cross {
+            color: #e74c3c;
+        }
+
+        .viz-symbol-approx {
+            color: #e67e22;
+        }
+
+        .viz-symbol svg {
+            width: 8px;
+            height: 8px;
+        }
+
+        .viz-with-symbol {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .viz-items-with-symbols {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .viz-item-row {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .workflow-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="workflow-container">
+        <table class="workflow-table">
+            <tr class="header-row">
+                <td class="stage-4">
+                    <div class="stage-title">Automated scoring with LLM-as-a-judge</div>
+                    <div class="stage-description">
+                        Reviewed System analysis used to create ground truth for a patient. Future independent runs evaluated against this at scale.
+                    </div>
+                </td>
+            </tr>
+            <tr class="graphics-row">
+                <td class="stage-4">
+                    <div class="evaluation-viz">
+                <div class="evaluation-left">
+                    <!-- Upper level: Reviewed System Analysis → Ground Truth -->
+                    <div class="evaluation-upper">
+                        <div class="system-analysis-container">
+                            <div class="system-analysis-title">Reviewed System analysis</div>
+                            <div class="viz-center-group">
+                                <div class="viz-items-with-symbols">
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-green"></div>
+                                        <span class="viz-symbol viz-symbol-tick">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2 6 L5 9 L10 3"
+                                                      stroke="#27ae60"
+                                                      stroke-width="2"
+                                                      fill="none"
+                                                      stroke-linecap="round"
+                                                      stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-red"></div>
+                                        <span class="viz-symbol viz-symbol-cross">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M3 3 L9 9 M9 3 L3 9"
+                                                      stroke="#e74c3c"
+                                                      stroke-width="2"
+                                                      stroke-linecap="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-green"></div>
+                                        <span class="viz-symbol viz-symbol-tick">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2 6 L5 9 L10 3"
+                                                      stroke="#27ae60"
+                                                      stroke-width="2"
+                                                      fill="none"
+                                                      stroke-linecap="round"
+                                                      stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="viz-with-symbol">
+                                    <div class="viz-box viz-box-amber"></div>
+                                    <span class="viz-symbol viz-symbol-approx">≈</span>
+                                </div>
+                                <div class="viz-with-symbol">
+                                    <div class="viz-box viz-box-comments"></div>
+                                    <span class="viz-symbol" style="visibility: hidden;">≈</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="analysis-arrow">
+                            <svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 15 L20 15 L15 10 M20 15 L15 20"
+                                      stroke="#555"
+                                      stroke-width="1.5"
+                                      fill="none"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="system-analysis-container">
+                            <div class="system-analysis-title">Ground Truth</div>
+                            <div class="system-analysis-visual">
+                                <div class="viz-list">
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                    <div class="viz-item"></div>
+                                </div>
+                                <div class="viz-box"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lower level: Future Independent Runs -->
+                    <div class="evaluation-lower">
+                        <div class="future-runs-container">
+                            <div class="future-runs-title">Future Independent Analyses</div>
+                            <div class="future-runs-group">
+                                <div class="system-analysis-visual">
+                                    <div class="viz-box"></div>
+                                    <div class="viz-list">
+                                        <div class="viz-item"></div>
+                                        <div class="viz-item"></div>
+                                        <div class="viz-item"></div>
+                                    </div>
+                                    <div class="viz-box"></div>
+                                </div>
+                                <div class="system-analysis-visual">
+                                    <div class="viz-box"></div>
+                                    <div class="viz-list">
+                                        <div class="viz-item"></div>
+                                        <div class="viz-item"></div>
+                                        <div class="viz-item"></div>
+                                    </div>
+                                    <div class="viz-box"></div>
+                                </div>
+                                <div class="system-analysis-visual">
+                                    <div class="viz-box"></div>
+                                    <div class="viz-list">
+                                        <div class="viz-item"></div>
+                                        <div class="viz-item"></div>
+                                        <div class="viz-item"></div>
+                                    </div>
+                                    <div class="viz-box"></div>
+                                </div>
+                                <div class="viz-ellipsis">...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-arrow">
+                    <svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 15 L20 15 L15 10 M20 15 L15 20"
+                              stroke="#555"
+                              stroke-width="1.5"
+                              fill="none"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"/>
+                    </svg>
+                </div>
+
+                <!-- RHS: Evaluated outputs -->
+                <div class="evaluation-right">
+                    <div class="evaluated-outputs-container">
+                        <div class="evaluated-outputs-title">Evaluated Outputs</div>
+                        <div class="evaluated-outputs-group">
+                            <div class="system-analysis-visual">
+                                <div class="viz-items-with-symbols">
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-green"></div>
+                                        <span class="viz-symbol viz-symbol-tick">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2 6 L5 9 L10 3"
+                                                      stroke="#27ae60"
+                                                      stroke-width="2"
+                                                      fill="none"
+                                                      stroke-linecap="round"
+                                                      stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-green"></div>
+                                        <span class="viz-symbol viz-symbol-tick">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2 6 L5 9 L10 3"
+                                                      stroke="#27ae60"
+                                                      stroke-width="2"
+                                                      fill="none"
+                                                      stroke-linecap="round"
+                                                      stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-green"></div>
+                                        <span class="viz-symbol viz-symbol-tick">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2 6 L5 9 L10 3"
+                                                      stroke="#27ae60"
+                                                      stroke-width="2"
+                                                      fill="none"
+                                                      stroke-linecap="round"
+                                                      stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="viz-with-symbol">
+                                    <div class="viz-box viz-item-green"></div>
+                                    <span class="viz-symbol viz-symbol-tick">
+                                        <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M2 6 L5 9 L10 3"
+                                                  stroke="#27ae60"
+                                                  stroke-width="2"
+                                                  fill="none"
+                                                  stroke-linecap="round"
+                                                  stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="system-analysis-visual">
+                                <div class="viz-items-with-symbols">
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-green"></div>
+                                        <span class="viz-symbol viz-symbol-tick">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2 6 L5 9 L10 3"
+                                                      stroke="#27ae60"
+                                                      stroke-width="2"
+                                                      fill="none"
+                                                      stroke-linecap="round"
+                                                      stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-red"></div>
+                                        <span class="viz-symbol viz-symbol-cross">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M3 3 L9 9 M9 3 L3 9"
+                                                      stroke="#e74c3c"
+                                                      stroke-width="2"
+                                                      stroke-linecap="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-green"></div>
+                                        <span class="viz-symbol viz-symbol-tick">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2 6 L5 9 L10 3"
+                                                      stroke="#27ae60"
+                                                      stroke-width="2"
+                                                      fill="none"
+                                                      stroke-linecap="round"
+                                                      stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="viz-with-symbol">
+                                    <div class="viz-box viz-box-amber"></div>
+                                    <span class="viz-symbol viz-symbol-approx">≈</span>
+                                </div>
+                            </div>
+                            <div class="system-analysis-visual">
+                                <div class="viz-items-with-symbols">
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-red"></div>
+                                        <span class="viz-symbol viz-symbol-cross">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M3 3 L9 9 M9 3 L3 9"
+                                                      stroke="#e74c3c"
+                                                      stroke-width="2"
+                                                      stroke-linecap="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-red"></div>
+                                        <span class="viz-symbol viz-symbol-cross">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M3 3 L9 9 M9 3 L3 9"
+                                                      stroke="#e74c3c"
+                                                      stroke-width="2"
+                                                      stroke-linecap="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="viz-item-row">
+                                        <div class="viz-item viz-item-green"></div>
+                                        <span class="viz-symbol viz-symbol-tick">
+                                            <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M2 6 L5 9 L10 3"
+                                                      stroke="#27ae60"
+                                                      stroke-width="2"
+                                                      fill="none"
+                                                      stroke-linecap="round"
+                                                      stroke-linejoin="round"/>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="viz-with-symbol">
+                                    <div class="viz-box viz-box-red"></div>
+                                    <span class="viz-symbol viz-symbol-cross">
+                                        <svg viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M3 3 L9 9 M9 3 L3 9"
+                                                  stroke="#e74c3c"
+                                                  stroke-width="2"
+                                                  stroke-linecap="round"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="viz-ellipsis">...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
